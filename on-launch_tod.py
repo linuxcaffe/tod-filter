@@ -39,27 +39,20 @@ def debug_log(msg):
     except Exception:
         pass
 
-
 def get_tod_blocks():
-    """Read tod.block.* values from taskwarrior config."""
     blocks = {}
     try:
-        result = subprocess.run(
-            ["task", "rc.verbose=nothing", "_show"],
-            capture_output=True, text=True, timeout=5
-        )
-        for line in result.stdout.splitlines():
-            line = line.strip()
-            if line.startswith("tod.block."):
-                # tod.block.morn=08:00-12:00
-                key, _, val = line.partition("=")
-                name = key.replace("tod.block.", "")
-                if val:
-                    blocks[name] = val.strip()
+        with open(TOD_RC, "r") as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("tod.block."):
+                    key, _, val = line.partition("=")
+                    name = key.replace("tod.block.", "")
+                    if val:
+                        blocks[name] = val.strip()
     except Exception as e:
-        debug_log("Error reading config: {}".format(e))
+        debug_log("Error reading tod.rc: {}".format(e))
     return blocks
-
 
 def parse_time(t):
     """Parse HH:MM string to (hour, minute) tuple."""
