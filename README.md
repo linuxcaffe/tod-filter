@@ -40,7 +40,7 @@ times of day. Untagged tasks stay visible. Nothing important gets hidden.
 
 - **Negative filtering**
   The hook determines which blocks do *not* match the current time, and builds
-  a context filter that hides those tags. If it's evening, tasks tagged `+morn`
+  a context filter that hides those tags. If it's evening, tasks tagged `+morn`, `+day`
   and `+aft` are hidden — everything else shows through.
 
 - **Context-based**
@@ -82,6 +82,22 @@ task context tod
 ---
 
 ## Installation
+
+### Option #1 - clone this repo and use the included install script
+
+```
+./tod-filter.install
+```
+
+Installs hook, tod.rc and README.md in correct folders under ~/.task
+
+### Option #2 - via awesome-taskwarrior's package manager
+
+```
+tw -I tod-filter
+```
+
+### Option #3 - manual 
 
 ```
 cp on-launch-tod.py ~/.task/hooks/
