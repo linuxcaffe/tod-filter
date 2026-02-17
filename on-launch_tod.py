@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 on-launch-tod.py - Time of Day context filter for Taskwarrior 2.6.2
-Version: 0.1.0
+Version: 0.1.1
 
 Updates context.tod.read in tod.rc with negative tags for non-matching
 time blocks, so tasks tagged for other times of day are hidden when

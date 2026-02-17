@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-on-launch-tod.py - Time of Day context filter for Taskwarrior 2.6.2
-Version: 0.1.0
+on-exit_tod.py - Time of Day context filter for Taskwarrior 2.6.2
+Version: 0.1.1
 
 Updates context.tod.read in tod.rc with negative tags for non-matching
 time blocks, so tasks tagged for other times of day are hidden when
 the 'tod' context is active.
 
 Install:
-  cp on-launch-tod.py ~/.task/hooks/on-launch-tod.py
-  chmod +x ~/.task/hooks/on-launch-tod.py
+  cp on-exit_tod.py ~/.task/hooks/on-exit_tod.py
+  chmod +x ~/.task/hooks/on-exit_tod.py
   echo 'include ~/.task/config/tod.rc' >> ~/.taskrc
 """
 
@@ -19,7 +19,7 @@ import json
 import subprocess
 from datetime import datetime
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 TOD_RC = os.path.expanduser("~/.task/config/tod.rc")
 GENERATED_MARKER = "context.tod.read="
 DAY_NAMES = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
@@ -34,7 +34,7 @@ def debug_log(msg):
         return
     try:
         with open(LOG_FILE, "a") as f:
-            f.write("{} [tod] {}\n".format(
+            f.write("{} [tod-exit] {}\n".format(
                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"), msg))
     except Exception:
         pass
@@ -173,10 +173,9 @@ def update_rc(new_filter):
 
 
 def main():
-    # Read and pass through input (on-launch hook protocol)
-    lines = sys.stdin.readlines()
-    for line in lines:
-        sys.stdout.write(line)
+    # on-exit hook: consume stdin but do NOT echo it back
+    # (on-exit protocol: outputting JSON would cause "Expected 0, found N" errors)
+    sys.stdin.readlines()
 
     # Do our work
     blocks = get_tod_blocks()
