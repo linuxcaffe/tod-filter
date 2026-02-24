@@ -1,5 +1,6 @@
 # tw-tod - Time of Day context filter for Taskwarrior 2.6.2
 # Include this file from .taskrc:  include ~/.task/config/tod.rc
+# version 0.1.2
 #
 # Block definitions - customize times and days to suit your schedule
 # Time blocks use HH:MM-HH:MM format (24hr), overnight ranges supported
