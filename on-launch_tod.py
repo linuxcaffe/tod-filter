@@ -1,4 +1,16 @@
 #!/usr/bin/env python3
+import os as _os_timing, time as _time_module
+if _os_timing.environ.get('TW_TIMING'):
+    import atexit as _atexit
+    _t0 = _time_module.perf_counter()
+
+    def _report_timing(_f=__file__):
+        elapsed = (_time_module.perf_counter() - _t0) * 1000
+        import os.path as _osp
+        print(f"[timing] {_osp.basename(_f)}: {elapsed:.1f}ms", file=__import__('sys').stderr)
+
+    _atexit.register(_report_timing)
+
 """
 on-launch-tod.py - Time of Day context filter for Taskwarrior 2.6.2
 Version: 0.1.2
@@ -51,25 +63,13 @@ def get_log_dir():
     return log_dir
 
 # ============================================================================
-# Timing support - set TW_TIMING=1 to enable; zero overhead otherwise
-# ============================================================================
-if os.environ.get('TW_TIMING'):
-    import time as _time_module
-    import atexit as _atexit
-    _t0 = _time_module.perf_counter()
-
-    def _report_timing():
-        elapsed = (_time_module.perf_counter() - _t0) * 1000
-        print(f"[timing] {os.path.basename(__file__)}: {elapsed:.1f}ms", file=sys.stderr)
-
-    _atexit.register(_report_timing)
-
 # ============================================================================
 # Original Code with Debug Enhancements
 # ============================================================================
 
 VERSION = "0.1.0"
 TOD_RC = os.path.expanduser("~/.task/config/tod.rc")
+CMX_STALE_MARKER = os.path.expanduser("~/.task/config/.cmx_stale")
 GENERATED_MARKER = "context.tod.read="
 DAY_NAMES = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
 
@@ -214,6 +214,11 @@ def update_rc(new_filter):
             with open(TOD_RC, "w") as f:
                 f.writelines(lines)
             debug_log("Updated tod.rc: {}".format(new_filter))
+            # Signal tw to rebuild the cmx combined filter on next invocation
+            try:
+                open(CMX_STALE_MARKER, 'w').close()
+            except OSError:
+                pass
         except Exception as e:
             debug_log("Error writing tod.rc: {}".format(e))
             return False
