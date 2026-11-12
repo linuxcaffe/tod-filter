@@ -1,0 +1,9 @@
+[Unit]
+Description=Refresh the tod filter every 15 minutes (block boundaries fall on the quarter hour)
+
+[Timer]
+OnCalendar=*:0/15:05
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -164,3 +164,18 @@ cat ~/.task/hooks/tod_debug.log
 - Language: Python
 - Requires: Taskwarrior 2.6.2
 - Platforms: Linux
+
+## Keeping it current (draft)
+
+The hooks only run on a `task` command with hooks on, and on-launch runs after `task` has read its
+config, so the filter lags one command; tw-web's reads (hooks off) never refresh it, and the cmx
+copy in `.taskrc` changes only when `tw` next runs. `tod-refresh` does both steps on a timer:
+
+- **Desktop (systemd):** copy `tod-refresh` to `~/.task/scripts/`, the two `contrib/` units to
+  `~/.config/systemd/user/`, then `systemctl --user enable --now tod-refresh.timer`.
+- **Termux:** `termux-job-scheduler --job-id 42 --period-ms 900000 --persisted true --script ~/.task/scripts/tod-refresh`
+  (needs the Termux:API app; Android may run it late), or `pkg install cronie termux-services`,
+  `sv-enable crond` and a crontab line `*/15 * * * * ~/.task/scripts/tod-refresh`.
+
+`tod.rc` is runtime state (gittw ignores it): each station keeps its own, and a fresh station needs
+it from the installer, not from sync.

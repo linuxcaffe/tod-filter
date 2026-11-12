@@ -1,0 +1,14 @@
+#!/bin/sh
+# tod-refresh: bring the tod filter (and the cmx set that includes it) up to date now.
+# Run by a timer at block boundaries, so plain task, vit and tw-web (whose reads run with
+# hooks off) see the right time block without anyone running a hooked command first.
+#   1. the on-launch hook rewrites context.tod.read in tod.rc; on a change it touches .cmx_stale
+#   2. tw rebuilds the active cmx set from the marker (no marker: no-op); `tw @` only reports
+# Draft 2026-11-11 (tw-web session): see README "Keeping it current".
+set -u
+hook="$HOME/.task/hooks/on-launch_tod.py"
+tw="$HOME/.task/scripts/tw"
+[ -x "$hook" ] || exit 0
+python3 "$hook" </dev/null >/dev/null || exit 1
+[ -e "$HOME/.task/config/.cmx_stale" ] && [ -x "$tw" ] && "$tw" @ >/dev/null 2>&1
+exit 0

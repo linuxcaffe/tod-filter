@@ -1,0 +1,6 @@
+[Unit]
+Description=Refresh the Taskwarrior time-of-day filter (tod-filter)
+
+[Service]
+Type=oneshot
+ExecStart=%h/.task/scripts/tod-refresh
